@@ -1,24 +1,36 @@
 function shuffle(array) {
     var currentIndex = array.length, temporaryValue, randomIndex;
-
     while (currentIndex !== 0) {
-        randomIndex = Math.floor(Math.random() * currentIndex);
-        currentIndex -= 1;
-        temporaryValue = array[currentIndex];
-        array[currentIndex] = array[randomIndex];
-        array[randomIndex] = temporaryValue;
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex -= 1;
+    temporaryValue = array[currentIndex];
+    array[currentIndex] = array[randomIndex];
+    array[randomIndex] = temporaryValue;
     }
-
     return array;
 }
 
 // varible
-
+// game varibles 
 let hasOpenedCard = false;
 let firstCard , secondCard;
-let first , second ;
+let first , second;
+let lockBorad = false;
 
+// timer varibles 
+let time = 0;
+let timerId = 0;
+let timerOut = true;
+
+//Elements in a variable
+const cards = document.getElementsByClassName("card");
+const restart = document.querySelector("#restart");
+const timer = document.querySelector("#timer");
+
+//functions
+// opening cards
 const openedCard = (c, m) => {
+    if (lockBorad) return;
     c.classList.toggle("open");
     if (!hasOpenedCard){
         hasOpenedCard = true;
@@ -32,27 +44,22 @@ const openedCard = (c, m) => {
     }
 }
 
+// checking for a match
 const checkForMatch = () => {
     if(first == second){
         firstCard.classList.add("match");
         secondCard.classList.add("match");
-        // firstCard.removeEventListener("click", (event));
     } else {
+        lockBorad = true;
         setTimeout(() => {
         firstCard.classList.remove("open");
         secondCard.classList.remove("open");
-        }, 1000);
+        lockBorad = false;
+        }, 750);
     }
 } 
 
-//Variables
-let time = 0;
-let timerId = 0;
-let timerOut = true;
-//Elements in a variable
-const restart = document.querySelector("#restart");
-const timer = document.querySelector("#timer");
-//use this function to start the timer
+//start the timer
 const initClock = () => {
     timerOut = false;
     timerId = setInterval(() => {
@@ -60,7 +67,8 @@ const initClock = () => {
         timerCount();
     }, 1000);
 }
-//this function update the timer values
+
+//update the timer values
 const timerCount = () => {
     const min = Math.floor(time/60);
     const sec = time%60;
@@ -70,24 +78,26 @@ const timerCount = () => {
         timer.innerHTML = `${min}:${sec}`;
     }
 }
+
 // stop and clear the timer
 const stopClock = () => {
     clearInterval(timerId);    
 }
 
-
-
-const cards = document.querySelectorAll(".card");
+// adding time listener to the cards  
 for (const card of cards){
     card.addEventListener("click", (event) => {
-        let cardChildClass = event.target.firstElementChild.classList.value;
-        openedCard(card, cardChildClass);
+        if (!card.classList.contains("open")){
+            let cardChildClass = event.target.firstElementChild.classList.value;
+            openedCard(card, cardChildClass);
+        }
         if(timerOut){
             initClock();
         }
     });
 };
 
+// restarting the game 
 restart.addEventListener("click", function(){
     stopClock();
     timerOut = true;
@@ -95,11 +105,3 @@ restart.addEventListener("click", function(){
     timerCount();
     // add restart the whole game not just the timer 
 });
-
-//functions
-
-
-
-
-
-// event listeners
