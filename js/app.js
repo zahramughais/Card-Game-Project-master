@@ -1,11 +1,12 @@
 function shuffle(array) {
-    var currentIndex = array.length, temporaryValue, randomIndex;
+    let currentIndex = array.length, temporaryValue, randomIndex;
     while (currentIndex !== 0) {
     randomIndex = Math.floor(Math.random() * currentIndex);
     currentIndex -= 1;
     temporaryValue = array[currentIndex];
     array[currentIndex] = array[randomIndex];
     array[randomIndex] = temporaryValue;
+    array[randomIndex].style.order = randomIndex;
     }
     return array;
 }
@@ -22,12 +23,28 @@ let time = 0;
 let timerId = 0;
 let timerOut = true;
 
+// moves varibles 
+let clicksCount = 0;
+
 //Elements in a variable
-const cards = document.getElementsByClassName("card");
+let cards = document.getElementsByClassName("card");
 const restart = document.querySelector("#restart");
 const timer = document.querySelector("#timer");
+let hearts = document.querySelectorAll(".bi-heart-fill");
+let moves = document.querySelector("#moves");
 
 //functions
+// starting the game
+const startGame = () => {
+    let allCards = [];
+    for (let i = 0; i < cards.length; i++){
+        cards[i].classList.remove("open", "match");
+        allCards.push(cards[i]);
+    }
+    cards = shuffle(allCards);
+}
+window.onload = startGame();
+
 // opening cards
 const openedCard = (c, m) => {
     if (lockBorad) return;
@@ -40,6 +57,7 @@ const openedCard = (c, m) => {
         hasOpenedCard = false;
         secondCard = c;
         second = m;
+        moveCounter();
         checkForMatch();
     }
 }
@@ -55,7 +73,7 @@ const checkForMatch = () => {
         firstCard.classList.remove("open");
         secondCard.classList.remove("open");
         lockBorad = false;
-        }, 750);
+        }, 500);
     }
 } 
 
@@ -99,9 +117,37 @@ for (const card of cards){
 
 // restarting the game 
 restart.addEventListener("click", function(){
+    // restarting the timer
     stopClock();
     timerOut = true;
     time = 0;
     timerCount();
-    // add restart the whole game not just the timer 
+    //restartig the moves 
+    clicksCount = 0;
+    moves.innerHTML = `${clicksCount} moves` ;
+    for (var i= 0; i < hearts.length; i++){
+        hearts[i].style.visibility = "visible";
+    }
+    //shuffle the cards 
+    startGame();
 });
+
+// counting the moves 
+const moveCounter = () => {
+    clicksCount ++;
+    moves.innerHTML = `${clicksCount} moves` ;
+    if (clicksCount > 7 && clicksCount < 14){
+        for( i= 0; i < 3; i++){
+            if(i > 1){
+                hearts[i].style.visibility = "collapse";
+            }
+        }
+    }
+    else if (clicksCount > 15){
+        for( i= 0; i < 3; i++){
+            if(i > 0){
+                hearts[i].style.visibility = "collapse";
+            }
+        }
+    }
+}
