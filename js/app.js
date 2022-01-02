@@ -32,8 +32,12 @@ const restart = document.querySelector("#restart");
 const timer = document.querySelector("#timer");
 let hearts = document.querySelectorAll(".bi-heart-fill");
 let moves = document.querySelector("#moves");
+const cardToShuffle = document.querySelectorAll("#deck li");
 
-//functions
+//shuffling array
+let arr = Array.from(cardToShuffle);
+
+// functions
 // starting the game
 const startGame = () => {
     let allCards = [];
@@ -41,10 +45,16 @@ const startGame = () => {
         cards[i].classList.remove("open", "match");
         allCards.push(cards[i]);
     }
-    cards = shuffle(allCards);
+    reShuffle();
 }
-window.onload = startGame();
-
+//reshuffling
+function reShuffle(){
+    let shuffled =  shuffle(arr);
+    for(let card of shuffled){
+        deck.appendChild(card);
+    }
+}
+reShuffle();
 // opening cards
 const openedCard = (c, m) => {
     if (lockBorad) return;
